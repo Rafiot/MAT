@@ -49,6 +49,7 @@ class TestListlib(test.MATTest):
     def test_list(self):
         """check if get_meta returns metadata"""
         for _, dirty in self.file_list:
+            print dirty
             current_file = libmat.mat.create_class_file(dirty, False, add2archive=True)
             self.assertIsNotNone(current_file.get_meta())
 
@@ -159,12 +160,12 @@ class TestArchiveProcessing(test.MATTest):
         """
         tarpath = os.path.join(self.tmpdir, "test.tar.bz2")
         tar = tarfile.open(tarpath, "w")
-        for f in ('libtest.py', 'test.py', 'clitest.py'):
+        for f in ('test/libtest.py', 'test/test.py', 'test/clitest.py'):
             tar.add(f, f)
         tar.close()
         current_file = libmat.mat.create_class_file(tarpath, False, add2archive=False)
         unsupported_files = set(current_file.is_clean(list_unsupported=True))
-        self.assertEqual(unsupported_files, {'libtest.py', 'test.py', 'clitest.py'})
+        self.assertEqual(unsupported_files, {'test/libtest.py', 'test/test.py', 'test/clitest.py'})
 
     def test_archive_unwritable_content(self):
         path = os.path.join(self.tmpdir, 'unwritable_content.zip')
