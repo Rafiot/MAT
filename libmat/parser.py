@@ -85,7 +85,8 @@ class GenericParser(object):
         except:
             return False
 
-    def _remove(self, fieldset, field):
+    @staticmethod
+    def _remove(fieldset, field):
         """ Delete the given field
         """
         del fieldset[field]
@@ -119,7 +120,7 @@ class GenericParser(object):
     def create_backup_copy(self):
         """ Create a backup copy
         """
-        shutil.copy2(self.filename, self.filename + '.bak')
+        shutil.copy2(self.filename, os.path.join(self.filename, '.bak'))
 
     def do_backup(self):
         """ Keep a backup of the file if asked.
@@ -128,7 +129,7 @@ class GenericParser(object):
             but it greatly simplify new strippers implementation.
         """
         if self.backup:
-            shutil.move(self.filename, self.filename + '.bak')
+            shutil.move(self.filename, os.path.join(self.filename, '.bak'))
         else:
             mat.secure_remove(self.filename)
         shutil.move(self.output, self.filename)

@@ -9,7 +9,6 @@ import os
 import platform
 import subprocess
 import xml.sax
-import mimetypes
 
 import hachoir_core.cmd_line
 import hachoir_parser
@@ -46,14 +45,14 @@ def get_logo():
 
 
 def get_datafile_path(filename):
-    """ Return the path to the given ressource
+    """ Return the path to $filename
+    :param string filename:
     """
-    if os.path.isfile(os.path.join(os.path.curdir, 'data', filename)):
-        return os.path.join(os.path.curdir, 'data', filename)
-    elif os.path.isfile(os.path.join('/usr/local/share/mat/', filename)):
-        return os.path.join('/usr/local/share/mat/', filename)
-    elif os.path.isfile(os.path.join('/usr/share/mat/', filename)):
-        return os.path.join('/usr/share/mat/', filename)
+    paths = ['data', '/usr/local/share/mat/', '/usr/share/mat/']
+    for path in paths:
+        filepath = os.path.join(os.path.curdir, path, filename)
+        if os.path.isfile(filepath):
+            return filepath
 
 
 def list_supported_formats():
@@ -82,6 +81,7 @@ class XMLParser(xml.sax.handler.ContentHandler):
     """
 
     def __init__(self):
+        xml.sax.handler.ContentHandler.__init__(self)
         self.dict = {}
         self.list = []
         self.content, self.key = '', ''
@@ -113,10 +113,10 @@ class XMLParser(xml.sax.handler.ContentHandler):
 
 
 def secure_remove(filename):
-    """ Securely remove the file
+    """ Securely remove $filename
+    :param str filename: File to be removed
     """
-    # I want the file removed, even if it's read-only
-    try:
+    try:  # I want the file removed, even if it's read-only
         os.chmod(filename, 220)
     except OSError:
         logging.error('Unable to add write rights to %s' % filename)
@@ -145,17 +145,17 @@ def secure_remove(filename):
 def create_class_file(name, backup, **kwargs):
     """ Return a $FILETYPEStripper() class,
         corresponding to the filetype of the given file
+
+        :param str name: name of the file to be parsed
+        :param bool backup: shell the file be backuped?
     """
     if not os.path.isfile(name):  # check if the file exists
         logging.error('%s is not a valid file' % name)
         return None
-
-    if not os.access(name, os.R_OK):  # check read permissions
+    elif not os.access(name, os.R_OK):  # check read permissions
         logging.error('%s is is not readable' % name)
         return None
-
-    if not os.path.getsize(name):
-        # check if the file is not empty (hachoir crash on empty files)
+    elif not os.path.getsize(name):  # check if the file is not empty (hachoir crash on empty files)
         logging.error('%s is empty' % name)
         return None
 
@@ -168,14 +168,10 @@ def create_class_file(name, backup, **kwargs):
     if not parser:
         logging.info('Unable to parse %s with hachoir' % filename)
 
-    mime = mimetypes.guess_type(filename)[0]
+    mime = mimetypes.guess_type(name)[0]
     if not mime:
         logging.info('Unable to find mimetype of %s' % filename)
         return None
-
-    if mime == 'application/zip':  # some formats are zipped stuff
-        if mimetypes.guess_type(name)[0]:
-            mime = mimetypes.guess_type(name)[0]
 
     if mime.startswith('application/vnd.oasis.opendocument'):
         mime = 'application/opendocument'  # opendocument fileformat
