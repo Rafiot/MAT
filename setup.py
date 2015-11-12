@@ -2,8 +2,7 @@
 
 import os
 
-from distutils.core import setup
-from DistUtilsExtra.command import *
+from setuptools import setup
 
 __version__ = '0.5.3'
 
@@ -25,6 +24,7 @@ setup(
     url='https://mat.boum.org',
     packages=['libmat', 'libmat.hachoir_editor', 'libmat.bencode'],
     scripts=['mat', 'mat-gui'],
+    test_suite="test",
     data_files=[
         ('share/applications', ['mat.desktop']),
         ('share/mat', ['data/FORMATS', 'data/mat.glade']),
@@ -33,12 +33,5 @@ setup(
         ('share/man/man1', ['mat.1', 'mat-gui.1']),
         ('share/nautilus-python/extensions', ['nautilus/nautilus-mat.py'])
     ],
-    cmdclass={
-        'build': build_extra.build_extra,
-        'build_i18n': build_i18n.build_i18n,
-        'build_help': build_help.build_help,
-        'build_icons': build_icons.build_icons,
-        'clean': clean_i18n.clean_i18n,
-    },
-    requires=['mutagen', 'gi', 'pdfrw']
+    install_requires=['mutagen', 'gi', 'pdfrw', 'hachoir_core', 'hachoir_parser']
 )

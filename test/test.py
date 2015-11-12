@@ -17,9 +17,11 @@ import unittest
 
 VERBOSITY = 15
 
-clean = glob.glob('clean*')
+cur_dir = os.path.dirname(os.path.realpath(__file__))
+
+clean = glob.glob(os.path.join(cur_dir, 'clean*'))
 clean.sort()
-dirty = glob.glob('dirty*')
+dirty = glob.glob(os.path.join(cur_dir, 'dirty*'))
 dirty.sort()
 
 FILE_LIST = zip(clean, dirty)
@@ -30,14 +32,14 @@ try:  # PDF render processing
     from gi.repository import Poppler
     import pdfrw
 except ImportError:
-    FILE_LIST.remove(('clean é.pdf', 'dirty é.pdf'))
+    FILE_LIST.remove((os.path.join(cur_dir, 'clean é.pdf'), os.path.join(cur_dir, 'dirty é.pdf')))
 
 try:  # python-mutagen : audio file format
     import mutagen
 except ImportError:
-    FILE_LIST.remove(('clean é.ogg', 'dirty é.ogg'))
-    FILE_LIST.remove(('clean é.mp3', 'dirty é.mp3'))
-    FILE_LIST.remove(('clean é.flac', 'dirty é.flac'))
+    FILE_LIST.remove((os.path.join(cur_dir, 'clean é.ogg'), os.path.join(cur_dir, 'dirty é.ogg')))
+    FILE_LIST.remove((os.path.join(cur_dir, 'clean é.mp3'), os.path.join(cur_dir, 'dirty é.mp3')))
+    FILE_LIST.remove((os.path.join(cur_dir, 'clean é.flac'), os.path.join(cur_dir, 'dirty é.flac')))
 
 
 class MATTest(unittest.TestCase):
@@ -50,11 +52,12 @@ class MATTest(unittest.TestCase):
             Create working copy of the clean and the dirty file in the TMP dir
         """
         self.file_list = []
+        self.cur_dir = cur_dir
         self.tmpdir = tempfile.mkdtemp()
 
         for clean_file, dirty_file in FILE_LIST:
-            clean_dir = os.path.join(self.tmpdir, clean_file)
-            dirty_dir = os.path.join(self.tmpdir, dirty_file)
+            clean_dir = os.path.join(self.tmpdir, os.path.basename(clean_file))
+            dirty_dir = os.path.join(self.tmpdir, os.path.basename(dirty_file))
             shutil.copy2(clean_file, clean_dir)
             shutil.copy2(dirty_file, dirty_dir)
             self.file_list.append((clean_dir, dirty_dir))

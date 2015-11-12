@@ -155,16 +155,16 @@ class TestArchiveProcessing(test.MATTest):
         """
         tarpath = os.path.join(self.tmpdir, "test.tar.bz2")
         tar = tarfile.open(tarpath, "w")
-        for f in ('../mat.desktop', '../README.security', '../setup.py'):
-            tar.add(f, f[3:])  # trim '../'
+        for f in ('./mat.desktop', './README.security', './setup.py'):
+            tar.add(f, f[2:])  # trim './'
         tar.close()
         current_file = libmat.mat.create_class_file(tarpath, False, add2archive=False)
         unsupported_files = set(current_file.is_clean(list_unsupported=True))
         self.assertEqual(unsupported_files, {'mat.desktop', 'README.security', 'setup.py'})
 
     def test_archive_unwritable_content(self):
-        path = os.path.join(self.tmpdir, './unwritable_content.zip')
-        shutil.copy2('./unwritable_content.zip', self.tmpdir)
+        path = os.path.join(self.tmpdir, 'unwritable_content.zip')
+        shutil.copy2(os.path.join(self.cur_dir, 'unwritable_content.zip'), self.tmpdir)
         current_file = libmat.mat.create_class_file(path, False, add2archive=False)
         current_file.remove_all()
         current_file = libmat.mat.create_class_file(path, False, add2archive=False)
