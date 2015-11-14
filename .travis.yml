@@ -9,7 +9,7 @@ virtualenv:
 sudo: required
 
 before_install:
-    - sudo apt-get install python-distutils-extra
+    - sudo apt-get install python-distutils-extra libimage-exiftool-perl
 
 install:
     - pushd ..

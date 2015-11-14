@@ -49,7 +49,6 @@ class TestListlib(test.MATTest):
     def test_list(self):
         """check if get_meta returns metadata"""
         for _, dirty in self.file_list:
-            print dirty
             current_file = libmat.mat.create_class_file(dirty, False, add2archive=True)
             self.assertIsNotNone(current_file.get_meta())
 
