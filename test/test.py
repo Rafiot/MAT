@@ -93,9 +93,11 @@ if __name__ == '__main__':
         print('Please specify either --local or --system')
         sys.exit(1)
 
+    clitest.IS_LOCAL = IS_LOCAL
+    clitest.set_mat_path()
 
     SUITE = unittest.TestSuite()
-    SUITE.addTests(clitest.get_tests())
+    #SUITE.addTests(clitest.get_tests())
     SUITE.addTests(libtest.get_tests())
 
     ret = unittest.TextTestRunner(verbosity=VERBOSITY).run(SUITE).wasSuccessful()

@@ -12,12 +12,18 @@ import sys
 import tarfile
 
 import test
+
+IS_LOCAL = True
 MAT_PATH = 'mat'
-if test.IS_LOCAL is True:
-    # Are we testing the _local_ version of MAT?
-    sys.path.insert(0, '..')
-    MAT_PATH = './mat'
-# else it will be in the path
+
+
+def set_mat_path():
+    global MAT_PATH
+    if IS_LOCAL is True:
+        # Are we testing the _local_ version of MAT?
+        sys.path.insert(0, '..')
+        MAT_PATH = './mat'
+    # else it will be in the path
 
 from libmat import mat
 
@@ -120,13 +126,16 @@ class TestUnsupported(test.MATTest):
         """
         tarpath = os.path.join(self.tmpdir, "test.tar.bz2")
         tar = tarfile.open(tarpath, "w")
-        for f in ('test/libtest.py', 'test/test.py', 'test/clitest.py'):
+        for f in (os.path.join(self.cur_dir, 'libtest.py'), os.path.join(self.cur_dir, 'test.py'),
+                  os.path.join(self.cur_dir, 'clitest.py')):
             tar.add(f, f)
         tar.close()
         proc = subprocess.Popen([MAT_PATH, tarpath], stdout=subprocess.PIPE)
         stdout, _ = proc.communicate()
-        self.assertTrue('It contains unsupported filetypes:' \
-                        '\n- test/libtest.py\n- test/test.py\n- test/clitest.py\n'
+        self.assertTrue('It contains unsupported filetypes:'
+                        '\n- ' + os.path.join(self.cur_dir, 'libtest.py')[1:] +
+                        '\n- ' + os.path.join(self.cur_dir, 'test.py')[1:] +
+                        '\n- ' + os.path.join(self.cur_dir, 'clitest.py')[1:] + '\n'
                         in str(stdout))
 
 
