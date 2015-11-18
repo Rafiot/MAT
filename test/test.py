@@ -11,6 +11,7 @@
 import shutil
 import os
 import glob
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -46,7 +47,7 @@ except ImportError:
 try:  # exiftool
     subprocess.check_output(['exiftool', '-ver'])
 except:
-    FILE_LIST.remove(('clean é.tif', 'dirty é.tif'))
+    FILE_LIST.remove((os.path.join(cur_dir, 'clean é.tif'), os.path.join(cur_dir, 'dirty é.tif')))
 
 class MATTest(unittest.TestCase):
     """
